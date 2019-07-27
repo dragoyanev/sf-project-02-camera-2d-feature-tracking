@@ -193,7 +193,6 @@ void detKeypointsModern(std::vector<cv::KeyPoint> &keypoints, cv::Mat &img, std:
     bool bNMS = true;   // perform non-maxima suppression on keypoints
     cv::FastFeatureDetector::DetectorType type = cv::FastFeatureDetector::TYPE_9_16; // TYPE_9_16, TYPE_7_12, TYPE_5_8
     cv::Ptr<cv::FeatureDetector> detector;
-//    vector<cv::KeyPoint> kptsFast;
 
     double t = (double)cv::getTickCount();
 
@@ -225,31 +224,6 @@ void detKeypointsModern(std::vector<cv::KeyPoint> &keypoints, cv::Mat &img, std:
     else // unknown method
         detectorType += string(" unknown");
 
-//    std::sort(kptsFast.begin(), kptsFast.end(), [](cv::KeyPoint a, cv::KeyPoint b) {return a.response > b.response;});
-
-//    // perform non-maximum suppression (NMS) in local neighbourhood around new key point
-//    for (auto it = kptsFast.begin(); it != kptsFast.end(); ++it)
-//    {
-//        cv::KeyPoint newKeyPoint = (*it);
-//        bool bOverlap = false;
-//        for (auto it_filtered = keypoints.begin(); it_filtered != keypoints.end(); ++it_filtered)
-//        {
-//            double kptOverlap = cv::KeyPoint::overlap(newKeyPoint, *it_filtered);
-//            if (kptOverlap > maxOverlap)
-//            {
-//                bOverlap = true;
-//                if (newKeyPoint.response > (*it_filtered).response)
-//                {                      // if overlap is >t AND response is higher for new kpt
-//                    *it_filtered = newKeyPoint; // replace old key point with new one
-//                    break;             // quit loop over kptsFast
-//                }
-//            }
-//        }
-//        if (!bOverlap)
-//        {                                     // only add new key point if no overlap has been found in previous NMS
-//            keypoints.push_back(newKeyPoint); // store new keypoint in dynamic list
-//        }
-//    }
     t = ((double)cv::getTickCount() - t) / cv::getTickFrequency();
     cout << detectorType << " detection with n= "  << keypoints.size() << " keypoints in " << 1000 * t / 1.0 << " ms" << endl;
 
