@@ -100,10 +100,18 @@ int main(int argc, const char *argv[])
 
         // only keep keypoints on the preceding vehicle
         bool bFocusOnVehicle = true;
+        vector<cv::KeyPoint> keypoints_filtered;
         cv::Rect vehicleRect(535, 180, 180, 150);
         if (bFocusOnVehicle)
         {
-            // ...
+            for (auto it = keypoints.begin(); it != keypoints.end(); ++it)
+            {
+                double kptOverlap = vehicleRect.contains((*it).pt);
+                if (kptOverlap > 0.0)
+                    keypoints_filtered.push_back(*it);
+            }
+            keypoints = keypoints_filtered;
+            cout << "ROI points n=" << keypoints_filtered.size() << " keypoints" << endl;
         }
 
         //// EOF STUDENT ASSIGNMENT
