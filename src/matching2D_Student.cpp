@@ -188,41 +188,47 @@ void detKeypointsShiTomasi(vector<cv::KeyPoint> &keypoints, cv::Mat &img, bool b
 // FAST, BRISK, ORB, AKAZE, SIFT
 void detKeypointsModern(std::vector<cv::KeyPoint> &keypoints, cv::Mat &img, std::string detectorType, bool bVis)
 {
-//    double maxOverlap = 0.0; // max. permissible overlap between two features in %
     int threshold = 30;
     bool bNMS = true;   // perform non-maxima suppression on keypoints
     cv::FastFeatureDetector::DetectorType type = cv::FastFeatureDetector::TYPE_9_16; // TYPE_9_16, TYPE_7_12, TYPE_5_8
     cv::Ptr<cv::FeatureDetector> detector;
+    bool validDetectorType = false;
 
     double t = (double)cv::getTickCount();
 
     if (detectorType.compare("FAST") == 0)
     {
         detector = cv::FastFeatureDetector::create(threshold, bNMS, type);
-        detector->detect(img, keypoints);
+        validDetectorType = true
     }
     else if (detectorType.compare("BRISK") == 0)
     {
         detector = cv::BRISK::create(threshold);
-        detector->detect(img, keypoints);
+        validDetectorType = true
     }
     else if (detectorType.compare("ORB") == 0)
     {
         detector = cv::ORB::create();
-        detector->detect(img, keypoints);
+        validDetectorType = true
     }
     else if (detectorType.compare("AKAZE") == 0)
     {
         detector = cv::AKAZE::create();
-        detector->detect(img, keypoints);
+        validDetectorType = true
     }
     else if (detectorType.compare("SIFT") == 0)
     {
         detector = cv::xfeatures2d::SIFT::create();
-        detector->detect(img, keypoints);
+        validDetectorType = true
     }
     else // unknown method
+    {
         detectorType += string(" unknown");
+        validDetectorType = false;
+    }
+
+    if (validDetectorType) // protect call of detector in case of undefined detector type
+        detector->detect(img, keypoints);
 
     t = ((double)cv::getTickCount() - t) / cv::getTickFrequency();
     cout << detectorType << " detection with n= "  << keypoints.size() << " keypoints in " << 1000 * t / 1.0 << " ms" << endl;
