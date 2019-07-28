@@ -142,7 +142,13 @@ int main(int argc, const char *argv[])
 
         cv::Mat descriptors;
         string descriptorType = "BRISK"; // BRIEF, ORB, FREAK, AKAZE, SIFT
-        descKeypoints((dataBuffer.end() - 1)->keypoints, (dataBuffer.end() - 1)->cameraImg, descriptors, descriptorType);
+
+        // Some descriptors' types require specific detector type
+        if ((descriptorType.compare("AKAZE") == 0 && detectorType.compare("AKAZE") == 0) ||
+            descriptorType.compare("AKAZE") != 0)
+            descKeypoints((dataBuffer.end() - 1)->keypoints, (dataBuffer.end() - 1)->cameraImg, descriptors, descriptorType);
+        else
+            cout << "WARNING: Not supported combination detectorType = " << detectorType << " with descriptorType = " << descriptorType << endl;
         //// EOF STUDENT ASSIGNMENT
 
         // push descriptors for current frame to end of data buffer
