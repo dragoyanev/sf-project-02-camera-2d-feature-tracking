@@ -141,7 +141,7 @@ int main(int argc, const char *argv[])
         //// -> BRIEF, ORB, FREAK, AKAZE, SIFT
 
         cv::Mat descriptors;
-        string descriptorType = "BRISK"; // BRIEF, ORB, FREAK, AKAZE, SIFT
+        string descriptorType = "BRISK"; // BRISK, BRIEF, ORB, FREAK, AKAZE, SIFT
 
         // Some descriptors' types require specific detector type
         if ((descriptorType.compare("AKAZE") == 0 && detectorType.compare("AKAZE") == 0) ||
