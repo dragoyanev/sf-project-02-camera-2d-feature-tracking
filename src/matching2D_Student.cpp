@@ -37,8 +37,10 @@ void matchDescriptors(std::vector<cv::KeyPoint> &kPtsSource, std::vector<cv::Key
 // Use one of several types of state-of-art descriptors to uniquely identify keypoints
 void descKeypoints(vector<cv::KeyPoint> &keypoints, cv::Mat &img, cv::Mat &descriptors, string descriptorType)
 {
+    // BRISK, BRIEF, ORB, FREAK, AKAZE, SIFT
     // select appropriate descriptor
     cv::Ptr<cv::DescriptorExtractor> extractor;
+    bool validDescriptorType = false;
     if (descriptorType.compare("BRISK") == 0)
     {
 
@@ -47,16 +49,43 @@ void descKeypoints(vector<cv::KeyPoint> &keypoints, cv::Mat &img, cv::Mat &descr
         float patternScale = 1.0f; // apply this scale to the pattern used for sampling the neighbourhood of a keypoint.
 
         extractor = cv::BRISK::create(threshold, octaves, patternScale);
+        validDescriptorType = true;
     }
-    else
+    else if (descriptorType.compare("BRIEF") == 0)
     {
-
-        //...
+        extractor = cv::xfeatures2d::BriefDescriptorExtractor::create();
+        validDescriptorType = true;
+    }
+    else if (descriptorType.compare("ORB") == 0)
+    {
+        extractor = cv::ORB::create();
+        validDescriptorType = true;
+    }
+    else if (descriptorType.compare("FREAK") == 0)
+    {
+        extractor = cv::xfeatures2d::FREAK::create();
+        validDescriptorType = true;
+    }
+    else if (descriptorType.compare("AKAZE") == 0)
+    {
+        extractor = cv::AKAZE::create();
+        validDescriptorType = true;
+    }
+    else if (descriptorType.compare("SIFT") == 0)
+    {
+        extractor = cv::xfeatures2d::SIFT::create();
+        validDescriptorType = true;
+    }
+    else // unknown descriptor type
+    {
+        descriptorType += string(" unknown");
+        validDescriptorType = false;
     }
 
     // perform feature description
     double t = (double)cv::getTickCount();
-    extractor->compute(img, keypoints, descriptors);
+    if (validDescriptorType) // protect call of extractor in case of undefined descriptor type
+        extractor->compute(img, keypoints, descriptors);
     t = ((double)cv::getTickCount() - t) / cv::getTickFrequency();
     cout << descriptorType << " descriptor extraction in " << 1000 * t / 1.0 << " ms" << endl;
 }
@@ -199,27 +228,27 @@ void detKeypointsModern(std::vector<cv::KeyPoint> &keypoints, cv::Mat &img, std:
     if (detectorType.compare("FAST") == 0)
     {
         detector = cv::FastFeatureDetector::create(threshold, bNMS, type);
-        validDetectorType = true
+        validDetectorType = true;
     }
     else if (detectorType.compare("BRISK") == 0)
     {
         detector = cv::BRISK::create(threshold);
-        validDetectorType = true
+        validDetectorType = true;
     }
     else if (detectorType.compare("ORB") == 0)
     {
         detector = cv::ORB::create();
-        validDetectorType = true
+        validDetectorType = true;
     }
     else if (detectorType.compare("AKAZE") == 0)
     {
         detector = cv::AKAZE::create();
-        validDetectorType = true
+        validDetectorType = true;
     }
     else if (detectorType.compare("SIFT") == 0)
     {
         detector = cv::xfeatures2d::SIFT::create();
-        validDetectorType = true
+        validDetectorType = true;
     }
     else // unknown method
     {
