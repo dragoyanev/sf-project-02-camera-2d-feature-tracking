@@ -111,7 +111,7 @@ int main(int argc, const char *argv[])
                     keypoints_filtered.push_back(*it);
             }
             keypoints = keypoints_filtered;
-            cout << "ROI points n=" << keypoints_filtered.size() << " keypoints" << endl;
+            cout << "ROI keypoints n=" << keypoints_filtered.size() << " keypoints" << endl;
         }
 
         //// EOF STUDENT ASSIGNMENT
@@ -178,7 +178,7 @@ int main(int argc, const char *argv[])
 
             // store matches in current data frame
             (dataBuffer.end() - 1)->kptMatches = matches;
-
+            cout << "MATCH KEYPOINT DESCRIPTORS n=" << matches.size() << endl;
             cout << "#4 : MATCH KEYPOINT DESCRIPTORS done" << endl;
 
             // visualize matches between current and previous image
