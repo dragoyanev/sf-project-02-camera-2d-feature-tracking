@@ -242,6 +242,7 @@ void detKeypointsModern(std::vector<cv::KeyPoint> &keypoints, cv::Mat &img, std:
     cv::FastFeatureDetector::DetectorType type = cv::FastFeatureDetector::TYPE_9_16; // TYPE_9_16, TYPE_7_12, TYPE_5_8
     cv::Ptr<cv::FeatureDetector> detector;
     bool validDetectorType = false;
+    std::vector<cv::KeyPoint> keypoints_all;
 
     double t = (double)cv::getTickCount();
 
@@ -277,7 +278,34 @@ void detKeypointsModern(std::vector<cv::KeyPoint> &keypoints, cv::Mat &img, std:
     }
 
     if (validDetectorType) // protect call of detector in case of undefined detector type
-        detector->detect(img, keypoints);
+        detector->detect(img, keypoints_all);
+
+
+    std::sort(keypoints_all.begin(), keypoints_all.end(), [](cv::KeyPoint a, cv::KeyPoint b) {return a.response > b.response;});
+    double maxOverlap = 0.0; // max. permissible overlap between two features in %, used during non-maxima suppression
+    // perform non-maximum suppression (NMS) in local neighbourhood around new key point
+    for (auto it = keypoints_all.begin(); it != keypoints_all.end(); ++it)
+    {
+        cv::KeyPoint newKeyPoint = (*it);
+        bool bOverlap = false;
+        for (auto it_filtered = keypoints.begin(); it_filtered != keypoints.end(); ++it_filtered)
+        {
+            double kptOverlap = cv::KeyPoint::overlap(newKeyPoint, *it_filtered);
+            if (kptOverlap > maxOverlap)
+            {
+                bOverlap = true;
+                if (newKeyPoint.response > (*it_filtered).response)
+                {                      // if overlap is >t AND response is higher for new kpt
+                    *it_filtered = newKeyPoint; // replace old key point with new one
+                    break;             // quit loop over keypoints
+                }
+            }
+        }
+        if (!bOverlap)
+        {                                     // only add new key point if no overlap has been found in previous NMS
+            keypoints.push_back(newKeyPoint); // store new keypoint in dynamic list
+        }
+    }
 
     t = ((double)cv::getTickCount() - t) / cv::getTickFrequency();
     cout << detectorType << " detection with n= "  << keypoints.size() << " keypoints in " << 1000 * t / 1.0 << " ms" << endl;
